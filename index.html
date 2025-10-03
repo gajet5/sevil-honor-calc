@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор Honor System</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 15px;
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+            line-height: 1.4;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 100%;
+        }
+        
+        .section {
+            background: #2d2d2d;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #444;
+        }
+        
+        h1, h2, h3 {
+            color: #ffd700;
+            margin-bottom: 12px;
+            font-size: clamp(16px, 4vw, 24px);
+        }
+        
+        h2 {
+            font-size: clamp(14px, 3.5vw, 20px);
+        }
+        
+        h3 {
+            font-size: clamp(13px, 3vw, 18px);
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+            font-size: clamp(12px, 3vw, 14px);
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #3d3d3d;
+            border: 1px solid #555;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 16px; /* Увеличиваем для мобильных */
+            min-height: 44px; /* Минимальная высота для тач-интерфейса */
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            background: #ffd700;
+            color: #1e1e1e;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: clamp(12px, 3vw, 14px);
+            flex: 1;
+            min-width: 120px;
+            min-height: 44px;
+        }
+        
+        button:hover {
+            background: #ffed4a;
+        }
+        
+        .info-box {
+            background: #363636;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-size: clamp(11px, 2.8vw, 13px);
+        }
+        
+        /* Таблицы для мобильных */
+        .table-container {
+            overflow-x: auto;
+            margin: 10px 0;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 500px; /* Минимальная ширина для скролла на мобильных */
+            font-size: clamp(10px, 2.5vw, 12px);
+        }
+        
+        th, td {
+            border: 1px solid #555;
+            padding: 8px 6px;
+            text-align: center;
+            white-space: nowrap;
+        }
+        
+        th {
+            background: #444;
+            color: #ffd700;
+            font-weight: bold;
+        }
+        
+        tr:nth-child(even) {
+            background: #363636;
+        }
+        
+        /* Бейджи уровней */
+        .tier-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: clamp(9px, 2.5vw, 11px);
+            font-weight: bold;
+            margin: 1px;
+        }
+        
+        .tier-top { background: #ff6b6b; color: #000; }
+        .tier-high { background: #ffa500; color: #000; }
+        .tier-medium { background: #4ecdc4; color: #000; }
+        .tier-low { background: #45b7d1; color: #000; }
+        .tier-minimal { background: #96ceb4; color: #000; }
+        
+        /* Адаптивные группы */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .summary-item {
+            background: #363636;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: clamp(11px, 2.8vw, 13px);
+        }
+        
+        /* Мобильная навигация по таблицам */
+        .table-nav {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            gap: 10px;
+        }
+        
+        .table-nav button {
+            flex: 1;
+            min-width: auto;
+            padding: 8px 12px;
+            font-size: clamp(10px, 2.5vw, 12px);
+        }
+        
+        /* Улучшения для очень маленьких экранов */
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .section {
+                padding: 12px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            button {
+                min-width: 100%;
+            }
+            
+            table {
+                min-width: 600px; /* Увеличиваем для очень маленьких экранов */
+            }
+            
+            th, td {
+                padding: 6px 4px;
+            }
+        }
+        
+        /* Портретная ориентация */
+        @media (max-width: 768px) and (orientation: portrait) {
+            .container {
+                gap: 12px;
+            }
+        }
+        
+        /* Ландшафтная ориентация */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .container {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+            
+            .input-section {
+                grid-column: 1;
+            }
+            
+            .results-section {
+                grid-column: 2;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="section input-section">
+            <h2>⚙️ Настройки пула</h2>
+            
+            <div class="input-group">
+                <label for="poolSize">👥 Размер пула игроков:</label>
+                <input type="number" id="poolSize" value="100" min="1" max="1000">
+            </div>
+            
+            <div class="input-group">
+                <label for="minHK">🎯 Минимальное HK для участия:</label>
+                <input type="number" id="minHK" value="15" min="0">
+            </div>
+            
+            <div class="button-group">
+                <button onclick="calculate()">📊 Рассчитать</button>
+                <button onclick="resetToDefault()">🔄 Сброс</button>
+            </div>
+            
+            <div class="info-box">
+                <strong>📈 BRK значения (1.12+ модифицированные):</strong><br>
+                0.010, 0.025, 0.045, 0.075, 0.120, 0.180, 0.250, 0.330, 0.420, 0.520, 0.630, 0.750, 0.880, 1.000
+            </div>
+            
+            <div class="info-box">
+                <strong>🏆 RP награды (FY):</strong><br>
+                0, 400, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 11000, 12000, 13000
+            </div>
+        </div>
+        
+        <div class="section results-section">
+            <h2>📊 Результаты расчета</h2>
+            
+            <div class="table-nav">
+                <button onclick="showTable('breakpoint')">📋 Брейкпоинты</button>
+                <button onclick="showTable('standing')">🎯 Позиции</button>
+                <button onclick="showTable('summary')">📈 Сводка</button>
+            </div>
+            
+            <div id="breakpointTable" class="table-section">
+                <h3>🎯 Брейкпоинты распределения</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>BRK</th>
+                                <th>Значение</th>
+                                <th>Позиция</th>
+                                <th>RP</th>
+                                <th>%</th>
+                            </tr>
+                        </thead>
+                        <tbody id="breakpointBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div id="standingTable" class="table-section" style="display: none;">
+                <h3>📊 Распределение по позициям</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Поз.</th>
+                                <th>Уровень</th>
+                                <th>RP</th>
+                                <th>Пример CP</th>
+                                <th>Расчет RP</th>
+                            </tr>
+                        </thead>
+                        <tbody id="standingBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div id="summaryTable" class="table-section" style="display: none;">
+                <h3>📈 Сводка распределения</h3>
+                <div id="summaryContent" class="summary-grid">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Константы из HonorMgr.cpp
+        const DEFAULT_BRK = [
+            0.010,  // BRK[13]
+            0.025,  // BRK[12]
+            0.045,  // BRK[11]
+            0.075,  // BRK[10]
+            0.120,  // BRK[9]
+            0.180,  // BRK[8]
+            0.250,  // BRK[7]
+            0.330,  // BRK[6]
+            0.420,  // BRK[5]
+            0.520,  // BRK[4]
+            0.630,  // BRK[3]
+            0.750,  // BRK[2]
+            0.880,  // BRK[1]
+            1.000   // BRK[0]
+        ];
+
+        const RP_REWARDS = [
+            0,      // FY[0]
+            400,    // FY[1]
+            1000,   // FY[2]
+            2000,   // FY[3]
+            3000,   // FY[4]
+            4000,   // FY[5]
+            5000,   // FY[6]
+            6000,   // FY[7]
+            7000,   // FY[8]
+            8000,   // FY[9]
+            9000,   // FY[10]
+            10000,  // FY[11]
+            11000,  // FY[12]
+            12000,  // FY[13]
+            13000   // FY[14]
+        ];
+
+        let currentTable = 'breakpoint';
+
+        function showTable(tableName) {
+            // Скрываем все таблицы
+            document.querySelectorAll('.table-section').forEach(table => {
+                table.style.display = 'none';
+            });
+            
+            // Показываем выбранную таблицу
+            document.getElementById(tableName + 'Table').style.display = 'block';
+            currentTable = tableName;
+        }
+
+        function calculateBreakpoints(poolSize) {
+            const breakpoints = [];
+            
+            for (let i = 0; i < DEFAULT_BRK.length; i++) {
+                const brkValue = DEFAULT_BRK[i];
+                const position = Math.floor(brkValue * poolSize + 0.5);
+                const rpReward = RP_REWARDS[RP_REWARDS.length - 1 - i];
+                
+                breakpoints.push({
+                    index: i,
+                    value: brkValue,
+                    position: position,
+                    rpReward: rpReward,
+                    percentile: (brkValue * 100).toFixed(1) + '%'
+                });
+            }
+            
+            return breakpoints;
+        }
+
+        function generateStandingList(poolSize, breakpoints) {
+            const standings = [];
+            const groups = [];
+            
+            // Создаем группы на основе брейкпоинтов
+            for (let i = breakpoints.length - 1; i > 0; i--) {
+                const startPos = breakpoints[i].position + 1;
+                const endPos = breakpoints[i - 1].position;
+                const minRP = breakpoints[i].rpReward;
+                const maxRP = breakpoints[i - 1].rpReward;
+                
+                if (startPos <= endPos) {
+                    groups.push({
+                        start: startPos,
+                        end: endPos,
+                        minRP: minRP,
+                        maxRP: maxRP,
+                        level: getTierLevel(i)
+                    });
+                }
+            }
+            
+            // Добавляем первую позицию отдельно
+            if (breakpoints[breakpoints.length - 1].position >= 1) {
+                groups.unshift({
+                    start: 1,
+                    end: breakpoints[breakpoints.length - 1].position,
+                    minRP: breakpoints[breakpoints.length - 1].rpReward,
+                    maxRP: breakpoints[breakpoints.length - 1].rpReward,
+                    level: 'ТОП'
+                });
+            }
+            
+            // Генерируем примерные данные для каждой позиции
+            for (const group of groups) {
+                const positionsInGroup = group.end - group.start + 1;
+                let cpBase = (14000 - group.start * 100);
+                
+                for (let pos = group.start; pos <= group.end; pos++) {
+                    const exampleCP = Math.max(100, cpBase - (pos - group.start) * 80);
+                    const calculatedRP = calculateRpForPosition(pos, group.minRP, group.maxRP, positionsInGroup);
+                    
+                    standings.push({
+                        position: pos,
+                        level: group.level,
+                        rpRange: `${group.minRP}-${group.maxRP}`,
+                        exampleCP: Math.round(exampleCP),
+                        calculatedRP: Math.round(calculatedRP)
+                    });
+                }
+            }
+            
+            return { standings, groups };
+        }
+
+        function calculateRpForPosition(position, minRP, maxRP, groupSize) {
+            if (groupSize <= 1) return maxRP;
+            const progress = (position - 1) / (groupSize - 1);
+            return minRP + (maxRP - minRP) * (1 - progress);
+        }
+
+        function getTierLevel(brkIndex) {
+            const levels = ['ТОП', 'ВЫСОКИЙ', 'СРЕДНИЙ', 'НИЗКИЙ', 'МИНИМАЛЬНЫЙ'];
+            const levelIndex = Math.min(Math.floor(brkIndex / 3), levels.length - 1);
+            return levels[levelIndex];
+        }
+
+        function getTierBadge(level) {
+            const tierClasses = {
+                'ТОП': 'tier-top',
+                'ВЫСОКИЙ': 'tier-high', 
+                'СРЕДНИЙ': 'tier-medium',
+                'НИЗКИЙ': 'tier-low',
+                'МИНИМАЛЬНЫЙ': 'tier-minimal'
+            };
+            
+            return `<span class="tier-badge ${tierClasses[level] || ''}">${level}</span>`;
+        }
+
+        function calculate() {
+            const poolSize = parseInt(document.getElementById('poolSize').value);
+            const minHK = parseInt(document.getElementById('minHK').value);
+            
+            if (poolSize < 1) {
+                alert('Размер пула должен быть положительным числом');
+                return;
+            }
+            
+            // Расчет брейкпоинтов
+            const breakpoints = calculateBreakpoints(poolSize);
+            displayBreakpoints(breakpoints);
+            
+            // Генерация списка позиций
+            const { standings, groups } = generateStandingList(poolSize, breakpoints);
+            displayStandings(standings);
+            displaySummary(groups, poolSize, minHK);
+        }
+
+        function displayBreakpoints(breakpoints) {
+            const tbody = document.getElementById('breakpointBody');
+            tbody.innerHTML = '';
+            
+            for (const bp of breakpoints) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${13 - bp.index}</td>
+                    <td>${bp.value.toFixed(3)}</td>
+                    <td>#${bp.position}</td>
+                    <td>${bp.rpReward.toLocaleString()}</td>
+                    <td>${bp.percentile}</td>
+                `;
+                tbody.appendChild(row);
+            }
+        }
+
+        function displayStandings(standings) {
+            const tbody = document.getElementById('standingBody');
+            tbody.innerHTML = '';
+            
+            // Для мобильных показываем меньше строк
+            const step = standings.length > 30 ? Math.ceil(standings.length / 15) : 1;
+            
+            for (let i = 0; i < standings.length; i += step) {
+                const standing = standings[i];
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>#${standing.position}</td>
+                    <td>${getTierBadge(standing.level)}</td>
+                    <td>${standing.rpRange}</td>
+                    <td>${standing.exampleCP}</td>
+                    <td>${standing.calculatedRP}</td>
+                `;
+                tbody.appendChild(row);
+            }
+            
+            // Добавляем информацию о количестве строк
+            if (step > 1) {
+                const infoRow = document.createElement('tr');
+                infoRow.innerHTML = `<td colspan="5" style="text-align: center; font-style: italic;">
+                    Показано ${Math.ceil(standings.length / step)} из ${standings.length} позиций
+                </td>`;
+                tbody.appendChild(infoRow);
+            }
+        }
+
+        function displaySummary(groups, poolSize, minHK) {
+            const summaryDiv = document.getElementById('summaryContent');
+            let html = '';
+            
+            const activePlayers = groups.reduce((sum, group) => sum + (group.end - group.start + 1), 0);
+            const inactivePlayers = Math.max(0, poolSize - activePlayers);
+            
+            // Общая статистика
+            html += `
+                <div class="summary-item">
+                    <strong>📊 Общая статистика</strong><br>
+                    Активных: ${activePlayers} игроков<br>
+                    Неактивных: ${inactivePlayers} игроков<br>
+                    Минимальное HK: ${minHK}
+                </div>
+            `;
+            
+            for (const group of groups) {
+                const playersInGroup = group.end - group.start + 1;
+                const percentage = ((playersInGroup / poolSize) * 100).toFixed(1);
+                
+                html += `
+                    <div class="summary-item">
+                        <strong>${getTierBadge(group.level)} Уровень</strong><br>
+                        Места: ${group.start}-${group.end}<br>
+                        Игроков: ${playersInGroup} (${percentage}%)<br>
+                        RP: ${group.minRP}-${group.maxRP}
+                    </div>
+                `;
+            }
+            
+            summaryDiv.innerHTML = html;
+        }
+
+        function resetToDefault() {
+            document.getElementById('poolSize').value = 100;
+            document.getElementById('minHK').value = 15;
+            calculate();
+        }
+
+        // Обработка изменений размера экрана
+        window.addEventListener('resize', function() {
+            // При изменении ориентации пересчитываем отображение
+            if (window.innerHeight > window.innerWidth) {
+                // Портретная ориентация
+                document.body.style.padding = '10px';
+            } else {
+                // Ландшафтная ориентация
+                document.body.style.padding = '15px';
+            }
+        });
+
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
+            calculate();
+            
+            // Добавляем обработчики для удобства на мобильных
+            document.getElementById('poolSize').addEventListener('change', calculate);
+            document.getElementById('minHK').addEventListener('change', calculate);
+        });
+    </script>
+</body>
+</html>
